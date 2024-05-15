@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +44,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO findById(Long id) {
-        return null;
+//       Role role = roleRepository.findById(id).get();
+//        return roleMapper.convertToDTO(role);
+      return roleMapper.convertToDTO(roleRepository.findById(id).get());
     }
 }
