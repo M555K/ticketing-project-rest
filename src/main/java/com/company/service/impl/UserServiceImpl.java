@@ -36,6 +36,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteByUserName(String username) {
+       userRepository.deleteById(userRepository.findByUserName(username).getId());//deleteById method is internally managed by Spring Data JPA to operate within a transaction context
+      //  userRepository.deleteByUserName(username); we need to use @Transactional with deleteByUserName() in UserRepository
 
     }
 
@@ -50,5 +52,15 @@ public class UserServiceImpl implements UserService {
         //save to the DB
         userRepository.save(convertedUser);
         return findByUserName(user.getUserName());
+    }
+    // will not delete from DB
+    @Override
+    public void delete(String username) {
+        // find in DB and find the user
+        User user =  userRepository.findByUserName(username);
+        //change the status is deleted
+        user.setIsDeleted(true);
+        // save the objest
+        userRepository.save(user);
     }
 }
