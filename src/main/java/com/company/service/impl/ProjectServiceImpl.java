@@ -1,13 +1,26 @@
 package com.company.service.impl;
 
 import com.company.dto.ProjectDTO;
+import com.company.entity.Project;
+import com.company.mapper.ProjectMapper;
+import com.company.repository.ProjectRepository;
 import com.company.service.ProjectService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class ProjectServiceImpl implements ProjectService {
+private final ProjectRepository projectRepository;
+private final ProjectMapper projectMapper;
+
+    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper) {
+        this.projectRepository = projectRepository;
+        this.projectMapper = projectMapper;
+    }
+
     @Override
     public ProjectDTO getByProjectCode(String code) {
         return null;
@@ -15,7 +28,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectDTO> listAllProjects() {
-        return List.of();
+        List<Project> projects = projectRepository.findAll(Sort.by("projectCode"));
+        return projects.stream().map(projectMapper::convertToDTO).toList();
     }
 
     @Override
