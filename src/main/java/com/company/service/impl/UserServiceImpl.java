@@ -1,5 +1,6 @@
 package com.company.service.impl;
 
+import com.company.dto.RoleDTO;
 import com.company.dto.UserDTO;
 import com.company.entity.User;
 import com.company.mapper.UserMapper;
@@ -53,6 +54,16 @@ public class UserServiceImpl implements UserService {
         userRepository.save(convertedUser);
         return findByUserName(user.getUserName());
     }
+
+    @Override
+    public List<UserDTO> listAllByRole(String manager) {
+        // go to Db and give the users with the role
+        List<User> users = userRepository.findByRoleDescriptionIgnoreCase(manager);
+        return users.stream().map(userMapper::convertToDTO).toList();
+
+
+    }
+
     // will not delete from DB
     @Override
     public void delete(String username) {
@@ -61,6 +72,7 @@ public class UserServiceImpl implements UserService {
         //change the status is deleted
         user.setIsDeleted(true);
         // save the objest
-        userRepository.save(user);
+        userRepository.save(user)
+        ;
     }
 }
