@@ -34,7 +34,7 @@ private final ProjectMapper projectMapper;
 
     @Override
     public void save(ProjectDTO projectDTO) {
-
+      projectRepository.save(projectMapper.convertToEntity(projectDTO));
     }
 
     @Override
