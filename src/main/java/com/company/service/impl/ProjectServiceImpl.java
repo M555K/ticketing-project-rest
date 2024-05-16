@@ -54,4 +54,10 @@ private final ProjectMapper projectMapper;
         projectRepository.save(project);
     }
 
+    @Override
+    public void complete(String projectCode) {
+        Project projectDTO = projectRepository.findByProjectCode(projectCode);
+        projectDTO.setProjectStatus(Status.COMPLETE);
+        projectRepository.save(projectDTO);
+    }
 }
