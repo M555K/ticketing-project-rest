@@ -5,7 +5,10 @@ import com.company.service.ProjectService;
 import com.company.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/project")
@@ -30,24 +33,24 @@ public class ProjectController {
 
     }
 
-//    @PostMapping("/create")
-//    public String insertProject(@Valid @ModelAttribute("project") ProjectDTO project, BindingResult bindingResult, Model model) {
-//
-//        if (bindingResult.hasErrors()) {
-//
-//            model.addAttribute("managers", userService.findManagers());
-//            model.addAttribute("projects", projectService.findAll());
-//
-//            return "/project/create";
-//
-//        }
-//
-//        projectService.save(project);
-//
-//        return "redirect:/project/create";
-//
-//    }
-//
+    @PostMapping("/create")
+    public String insertProject(@ModelAttribute("project") ProjectDTO project, BindingResult bindingResult, Model model) {
+
+        if (bindingResult.hasErrors()) {
+
+            model.addAttribute("managers", userService.listAllByRole("manager"));
+            model.addAttribute("projects", projectService.listAllProjects());
+
+            return "/project/create";
+
+        }
+
+        projectService.save(project);
+
+        return "redirect:/project/create";
+
+    }
+
 //    @GetMapping("/delete/{projectCode}")
 //    public String deleteProject(@PathVariable("projectCode") String projectCode) {
 //        projectService.deleteById(projectCode);
