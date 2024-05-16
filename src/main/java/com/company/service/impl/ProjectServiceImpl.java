@@ -2,6 +2,7 @@ package com.company.service.impl;
 
 import com.company.dto.ProjectDTO;
 import com.company.entity.Project;
+import com.company.enums.Status;
 import com.company.mapper.ProjectMapper;
 import com.company.repository.ProjectRepository;
 import com.company.service.ProjectService;
@@ -34,7 +35,11 @@ private final ProjectMapper projectMapper;
 
     @Override
     public void save(ProjectDTO projectDTO) {
-      projectRepository.save(projectMapper.convertToEntity(projectDTO));
+        // before saving the project I need to define Status because, even the when I create a poject doesn't have the Status but, the table are expecting a value when the project is created
+        projectDTO.setProjectStatus(Status.OPEN);
+        Project project = projectMapper.convertToEntity(projectDTO);
+        //projectMapper mapped id to null
+        projectRepository.save(project);
     }
 
     @Override
