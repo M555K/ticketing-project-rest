@@ -11,7 +11,7 @@ import javax.validation.constraints.*;
 @Getter
 @Setter
 public class UserDTO {
-    private Long id;
+    private Long id;//when create project , projects table need to join users table based on manager_id (foreign key in project table)--> line 31 Project. Since UserDTO doesn't have the id field it mapped as null
     @NotBlank
     @Size(max = 15, min = 2)
     private String firstName;
