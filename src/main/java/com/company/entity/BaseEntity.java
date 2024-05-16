@@ -25,6 +25,10 @@ public class BaseEntity {
         this.insertUserId = 1L;// for now 1 , security is not connected --> will be dynamically check whoever is login into the system
         this.lastUpdateUserId=1L;
     }
-
+    @PreUpdate//update
+    private void onPreUpdate(){
+        this.lastUpdateDateTime = LocalDateTime.now();
+        this.lastUpdateUserId=1L;
+    }
 
 }
