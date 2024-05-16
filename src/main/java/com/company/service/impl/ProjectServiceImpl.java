@@ -24,7 +24,7 @@ private final ProjectMapper projectMapper;
 
     @Override
     public ProjectDTO getByProjectCode(String code) {
-        return null;
+        return projectMapper.convertToDTO(projectRepository.findByProjectCode(code));
     }
 
     @Override
@@ -44,7 +44,11 @@ private final ProjectMapper projectMapper;
 
     @Override
     public void update(ProjectDTO projectDTO) {
-
+        Project project = projectRepository.findByProjectCode(projectDTO.getProjectCode());
+        Project convertedProject = projectMapper.convertToEntity(projectDTO);
+        convertedProject.setId(project.getId());
+        convertedProject.setProjectStatus(project.getProjectStatus());
+        projectRepository.save(convertedProject);
     }
 
     @Override
@@ -60,4 +64,5 @@ private final ProjectMapper projectMapper;
         projectDTO.setProjectStatus(Status.COMPLETE);
         projectRepository.save(projectDTO);
     }
+
 }
