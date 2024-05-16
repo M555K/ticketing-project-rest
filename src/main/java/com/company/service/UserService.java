@@ -1,5 +1,6 @@
 package com.company.service;
 
+import com.company.dto.RoleDTO;
 import com.company.dto.UserDTO;
 import com.company.entity.User;
 
@@ -12,4 +13,6 @@ public interface UserService {
     void deleteByUserName(String username);
     UserDTO update(UserDTO user);
     void delete(String username);
+
+    List<UserDTO> listAllByRole(String manager);
 }
