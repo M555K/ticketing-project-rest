@@ -48,7 +48,10 @@ private final ProjectMapper projectMapper;
     }
 
     @Override
-    public void delete(ProjectDTO projectDTO) {
-
+    public void delete(String projectDTO) {
+        Project project = projectRepository.findByProjectCode(projectDTO);
+        project.setIsDeleted(true);
+        projectRepository.save(project);
     }
+
 }
