@@ -1,4 +1,4 @@
-package com.company.repository;
+package com.company.service;
 
 import com.company.dto.TaskDTO;
 
@@ -11,4 +11,7 @@ public interface TaskService {
     void update(TaskDTO taskDTO);
     TaskDTO getById(Long id);
 
+    int totalNonCompletedTask(String projectCode);
+
+    int totalCompletedTask(String projectCode);
 }
