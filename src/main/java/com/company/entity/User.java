@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name ="users")
 @NoArgsConstructor
-@Where(clause = "is_deleted=false")
+//@Where(clause = "is_deleted=false")//--> trow an error , when the employee complete all the task, i delete the employee, and then and then when I click on complete the project, In DB isDeleted = true, and this entity has @Where(clause = "is_deleted=false")
 public class User extends BaseEntity {
 
     private String firstName;
