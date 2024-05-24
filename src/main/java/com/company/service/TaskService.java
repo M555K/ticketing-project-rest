@@ -2,6 +2,7 @@ package com.company.service;
 
 import com.company.dto.ProjectDTO;
 import com.company.dto.TaskDTO;
+import com.company.enums.Status;
 
 import java.util.List;
 
@@ -19,4 +20,8 @@ public interface TaskService {
     void deleteTaskByProject(ProjectDTO projectDTO);
 
     void completeTaskByProject(ProjectDTO projectDTO);
+
+    Object listAllTasksByStatusIsNot(Status status);
+
+    Object listAllTasksByStatus(Status status);
 }
