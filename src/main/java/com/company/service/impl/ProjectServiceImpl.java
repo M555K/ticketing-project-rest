@@ -79,9 +79,11 @@ private final TaskService taskService;
 
     @Override
     public void complete(String projectCode) {
-        Project projectDTO = projectRepository.findByProjectCode(projectCode);
-        projectDTO.setProjectStatus(Status.COMPLETE);
-        projectRepository.save(projectDTO);
+        Project project = projectRepository.findByProjectCode(projectCode);
+        project.setProjectStatus(Status.COMPLETE);
+        projectRepository.save(project);
+        //complete all task when we pick  complete the project
+        taskService.completeTaskByProject(projectMapper.convertToDTO(project));
     }
 
     @Override
