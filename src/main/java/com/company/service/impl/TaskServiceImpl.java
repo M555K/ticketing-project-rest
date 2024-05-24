@@ -1,8 +1,11 @@
 package com.company.service.impl;
 
+import com.company.dto.ProjectDTO;
 import com.company.dto.TaskDTO;
+import com.company.entity.Project;
 import com.company.entity.Task;
 import com.company.enums.Status;
+import com.company.mapper.ProjectMapper;
 import com.company.mapper.TaskMapper;
 import com.company.repository.TaskRepository;
 import com.company.service.TaskService;
@@ -16,10 +19,12 @@ import java.util.Optional;
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final ProjectMapper projectMapper;
 
-    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper) {
+    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper, ProjectMapper projectMapper) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
+        this.projectMapper = projectMapper;
     }
 
     @Override
@@ -72,5 +77,14 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public int totalCompletedTask(String projectCode) {
         return taskRepository.totalCompletedTasks(projectCode);
+    }
+
+    @Override
+    public void deleteTaskByProject(ProjectDTO projectDTO) {
+        //to search for related task of the project in the repository
+        Project project = projectMapper.convertToEntity(projectDTO);
+        List<Task> allTasks = taskRepository.findAllByProject(project);
+        //using delete() from taskService to delete all tasks
+        allTasks.forEach(task->delete(task.getId()));
     }
 }
