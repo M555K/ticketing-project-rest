@@ -63,12 +63,13 @@ public class TaskServiceImpl implements TaskService {
         if (task.isPresent()){
             // if the status is null get from DB, else get from UI
             convertedTask.setTaskStatus(taskDTO.getTaskStatus()== null ? task.get().getTaskStatus(): taskDTO.getTaskStatus());
+            taskRepository.save(convertedTask);
         }
-        taskRepository.save(convertedTask);
+
     }
 
     @Override
-    public TaskDTO getById(Long id) {
+    public TaskDTO findById(Long id) {
     //  return taskMapper.convertToDTO(taskRepository.findById(id).get());
         Optional<Task> task = taskRepository.findById(id);
 //        if(task.isPresent()){
@@ -122,5 +123,11 @@ public class TaskServiceImpl implements TaskService {
         // get task of the employee
         List<Task> tasks = taskRepository.findAllByTaskStatusAndAssignedEmployee(status,userMapper.convertToEntity(loggedInUser));
         return tasks.stream().map(taskMapper::convertToDTO).toList();
+    }
+
+    @Override
+    public List<TaskDTO> listAllNonCompletedByAssignedEmployee(UserDTO employee) {
+        List<Task> allTasks = taskRepository.findAllByTaskStatusIsNotAndAssignedEmployee(Status.COMPLETE,userMapper.convertToEntity(employee));
+        return allTasks.stream().map(taskMapper::convertToDTO).toList();
     }
 }
