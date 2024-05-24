@@ -102,4 +102,10 @@ private final TaskService taskService;
         }).collect(Collectors.toList());
 
     }
+
+    @Override
+    public List<ProjectDTO> listAllNonCompletedByAssignedManager(UserDTO assignedManager) {
+        List<Project> allProjects = projectRepository.findAllByProjectStatusIsNotAndAssignedManager(Status.COMPLETE,userMapper.convertToEntity(assignedManager));
+        return allProjects.stream().map(projectMapper::convertToDTO).toList();
+    }
 }
