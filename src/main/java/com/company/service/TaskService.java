@@ -21,7 +21,7 @@ public interface TaskService {
 
     void completeTaskByProject(ProjectDTO projectDTO);
 
-    Object listAllTasksByStatusIsNot(Status status);
+    List<TaskDTO>listAllTasksByStatusIsNot(Status status);
 
-    Object listAllTasksByStatus(Status status);
+    List<TaskDTO> listAllTasksByStatus(Status status);
 }
