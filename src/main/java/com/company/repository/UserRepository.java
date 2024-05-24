@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User,Long> {
-      User findByUserName(String username);
+      User findByUserNameAndIsDeleted(String username, Boolean deleted);
+      List<User> findAllByIsDeletedOrderByFirstNameDesc(Boolean deleted);
+
       void deleteByUserName(String username);
-      List<User> findByRoleDescriptionIgnoreCase(String role);
+      List<User> findByRoleDescriptionIgnoreCaseAndIsDeleted(String role,Boolean deleted);
 }
