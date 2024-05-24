@@ -1,5 +1,6 @@
 package com.company.service;
 
+import com.company.dto.ProjectDTO;
 import com.company.dto.TaskDTO;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface TaskService {
     int totalNonCompletedTask(String projectCode);
 
     int totalCompletedTask(String projectCode);
+
+    void deleteTaskByProject(ProjectDTO projectDTO);
 }
