@@ -2,13 +2,16 @@ package com.company.service.impl;
 
 import com.company.dto.ProjectDTO;
 import com.company.dto.TaskDTO;
+import com.company.dto.UserDTO;
 import com.company.entity.Project;
 import com.company.entity.Task;
 import com.company.enums.Status;
 import com.company.mapper.ProjectMapper;
 import com.company.mapper.TaskMapper;
+import com.company.mapper.UserMapper;
 import com.company.repository.TaskRepository;
 import com.company.service.TaskService;
+import com.company.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,11 +23,15 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final ProjectMapper projectMapper;
+    private final UserService userService;
+    private final UserMapper userMapper;
 
-    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper, ProjectMapper projectMapper) {
+    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper, ProjectMapper projectMapper, UserService userService, UserMapper userMapper) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
         this.projectMapper = projectMapper;
+        this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -99,5 +106,21 @@ public class TaskServiceImpl implements TaskService {
             taskDto.setTaskStatus(Status.COMPLETE);
             update(taskDto);
         });
+    }
+
+    @Override
+    public List<TaskDTO> listAllTasksByStatusIsNot(Status status) {
+        UserDTO loggedInUser = userService.findByUserName("john@employee.com");
+        // get task of the employee
+        List<Task> tasks = taskRepository.findAllByTaskStatusIsNotAndAssignedEmployee(status,userMapper.convertToEntity(loggedInUser));
+        return tasks.stream().map(taskMapper::convertToDTO).toList();
+    }
+
+    @Override
+    public List<TaskDTO> listAllTasksByStatus(Status status) {
+        UserDTO loggedInUser = userService.findByUserName("john@employee.com");
+        // get task of the employee
+        List<Task> tasks = taskRepository.findAllByTaskStatusAndAssignedEmployee(status,userMapper.convertToEntity(loggedInUser));
+        return tasks.stream().map(taskMapper::convertToDTO).toList();
     }
 }
