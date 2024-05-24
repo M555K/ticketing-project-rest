@@ -9,6 +9,7 @@ import com.company.mapper.ProjectMapper;
 import com.company.mapper.UserMapper;
 import com.company.repository.ProjectRepository;
 import com.company.service.ProjectService;
+import com.company.service.TaskService;
 import com.company.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,14 @@ public class ProjectServiceImpl implements ProjectService {
 private final ProjectMapper projectMapper;
 private final UserService userService;
 private  final UserMapper userMapper;
+private final TaskService taskService;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper, UserService userService, UserMapper userMapper) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper, UserService userService, UserMapper userMapper, TaskService taskService) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.userService = userService;
         this.userMapper = userMapper;
+        this.taskService = taskService;
     }
 
     @Override
@@ -67,7 +70,11 @@ private  final UserMapper userMapper;
     public void delete(String projectDTO) {
         Project project = projectRepository.findByProjectCode(projectDTO);
         project.setIsDeleted(true);
+        //condition for using the same project code when the other one with the same project code was deleted
+        project.setProjectCode(project.getProjectCode()+"-"+project.getId());
         projectRepository.save(project);
+        // for task related
+        taskService.deleteTaskByProject(projectMapper.convertToDTO(project));
     }
 
     @Override
@@ -87,8 +94,8 @@ private  final UserMapper userMapper;
         //so first convert to the dto and then set the fields
      return list.stream().map(project ->{
             ProjectDTO projectDTO = projectMapper.convertToDTO(project);
-            projectDTO.setCompleteTaskCounts(3);
-            projectDTO.setUnfinishedTaskCounts(2);
+            projectDTO.setCompleteTaskCounts(taskService.totalNonCompletedTask(project.getProjectCode()));
+            projectDTO.setUnfinishedTaskCounts(taskService.totalCompletedTask(project.getProjectCode()));
             return projectDTO;
         }).collect(Collectors.toList());
 
