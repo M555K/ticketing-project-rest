@@ -96,8 +96,8 @@ private final TaskService taskService;
         //so first convert to the dto and then set the fields
      return list.stream().map(project ->{
             ProjectDTO projectDTO = projectMapper.convertToDTO(project);
-            projectDTO.setCompleteTaskCounts(taskService.totalNonCompletedTask(project.getProjectCode()));
-            projectDTO.setUnfinishedTaskCounts(taskService.totalCompletedTask(project.getProjectCode()));
+            projectDTO.setCompleteTaskCounts(taskService.totalCompletedTask(project.getProjectCode()));
+            projectDTO.setUnfinishedTaskCounts(taskService.totalNonCompletedTask(project.getProjectCode()));
             return projectDTO;
         }).collect(Collectors.toList());
 
