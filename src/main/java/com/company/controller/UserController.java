@@ -42,7 +42,7 @@ public class UserController {
     @PutMapping
     public ResponseEntity<ResponseWrapper> updateUser(@RequestBody UserDTO user){
         userService.update(user);
-        return ResponseEntity.ok(new ResponseWrapper("Users are successfully updated",user, HttpStatus.OK));
+        return ResponseEntity.ok(new ResponseWrapper("User are successfully updated",user, HttpStatus.OK));
     }
     @DeleteMapping("/{username}")
     public ResponseEntity<ResponseWrapper> deleteUser(@PathVariable("username") String userName){
