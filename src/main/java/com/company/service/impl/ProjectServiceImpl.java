@@ -12,9 +12,13 @@ import com.company.repository.ProjectRepository;
 import com.company.service.ProjectService;
 import com.company.service.TaskService;
 import com.company.service.UserService;
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -96,7 +100,10 @@ private final MapperUtils mapperUtils;
 
     @Override
     public List<ProjectDTO> listAllProjectDetails() {
-        UserDTO currentUser = userService.findByUserName("harold@manager.com");
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        SimpleKeycloakAccount detail = (SimpleKeycloakAccount) authentication.getDetails();
+        String username = detail.getKeycloakSecurityContext().getToken().getPreferredUsername();
+        UserDTO currentUser = userService.findByUserName(username);
         User user = userMapper.convertToEntity(currentUser);
         // get all project with specific manager
         List<Project> list = projectRepository.findAllByAssignedManager(user);
