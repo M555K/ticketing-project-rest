@@ -5,6 +5,7 @@ import com.company.dto.UserDTO;
 import com.company.entity.Project;
 import com.company.entity.User;
 import com.company.enums.Status;
+import com.company.mapper.MapperUtils;
 import com.company.mapper.ProjectMapper;
 import com.company.mapper.UserMapper;
 import com.company.repository.ProjectRepository;
@@ -28,31 +29,36 @@ private final ProjectMapper projectMapper;
 private final UserService userService;
 private  final UserMapper userMapper;
 private final TaskService taskService;
+private final MapperUtils mapperUtils;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper, UserService userService, UserMapper userMapper, TaskService taskService) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper, UserService userService, UserMapper userMapper, TaskService taskService, MapperUtils mapperUtils) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.userService = userService;
         this.userMapper = userMapper;
         this.taskService = taskService;
+        this.mapperUtils = mapperUtils;
     }
 
     @Override
     public ProjectDTO getByProjectCode(String code) {
-        return projectMapper.convertToDTO(projectRepository.findByProjectCode(code));
+      //  return projectMapper.convertToDTO(projectRepository.findByProjectCode(code));
+        Project project = projectRepository.findByProjectCode(code);
+        return mapperUtils.convert(project, ProjectDTO.class);
     }
 
     @Override
     public List<ProjectDTO> listAllProjects() {
         List<Project> projects = projectRepository.findAll(Sort.by("projectCode"));
-        return projects.stream().map(projectMapper::convertToDTO).toList();
+      //  return projects.stream().map(projectMapper::convertToDTO).toList();
+        return  projects.stream().map(each->mapperUtils.convert(each,ProjectDTO.class)).collect(Collectors.toList());
     }
 
     @Override
     public void save(ProjectDTO projectDTO) {
         // before saving the project I need to define Status because, even the when I create a poject doesn't have the Status but, the table are expecting a value when the project is created
         projectDTO.setProjectStatus(Status.OPEN);
-        Project project = projectMapper.convertToEntity(projectDTO);
+        Project project = mapperUtils.convert(projectDTO,Project.class);
         //projectMapper mapped id to null
         projectRepository.save(project);
     }
@@ -60,7 +66,7 @@ private final TaskService taskService;
     @Override
     public void update(ProjectDTO projectDTO) {
         Project project = projectRepository.findByProjectCode(projectDTO.getProjectCode());
-        Project convertedProject = projectMapper.convertToEntity(projectDTO);
+        Project convertedProject = mapperUtils.convert(project,Project.class);
         convertedProject.setId(project.getId());
         convertedProject.setProjectStatus(project.getProjectStatus());
         projectRepository.save(convertedProject);
@@ -74,7 +80,8 @@ private final TaskService taskService;
         project.setProjectCode(project.getProjectCode()+"-"+project.getId());
         projectRepository.save(project);
         // for task related
-        taskService.deleteTaskByProject(projectMapper.convertToDTO(project));
+      //  taskService.deleteTaskByProject(projectMapper.convertToDTO(project));
+        taskService.deleteTaskByProject(mapperUtils.convert(project,ProjectDTO.class));
     }
 
     @Override
@@ -83,7 +90,8 @@ private final TaskService taskService;
         project.setProjectStatus(Status.COMPLETE);
         projectRepository.save(project);
         //complete all task when we pick  complete the project
-        taskService.completeTaskByProject(projectMapper.convertToDTO(project));
+      //  taskService.completeTaskByProject(projectMapper.convertToDTO(project));
+        taskService.completeTaskByProject(mapperUtils.convert(project,ProjectDTO.class));
     }
 
     @Override
