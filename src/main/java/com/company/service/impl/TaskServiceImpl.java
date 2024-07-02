@@ -12,6 +12,9 @@ import com.company.mapper.UserMapper;
 import com.company.repository.TaskRepository;
 import com.company.service.TaskService;
 import com.company.service.UserService;
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -111,7 +114,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskDTO> listAllTasksByStatusIsNot(Status status) {
-        UserDTO loggedInUser = userService.findByUserName("john@employee.com");
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        SimpleKeycloakAccount detail = (SimpleKeycloakAccount) authentication.getDetails();
+        String username = detail.getKeycloakSecurityContext().getToken().getPreferredUsername();
+        UserDTO loggedInUser = userService.findByUserName(username);
         // get task of the employee
         List<Task> tasks = taskRepository.findAllByTaskStatusIsNotAndAssignedEmployee(status,userMapper.convertToEntity(loggedInUser));
         return tasks.stream().map(taskMapper::convertToDTO).toList();
@@ -119,7 +125,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskDTO> listAllTasksByStatus(Status status) {
-        UserDTO loggedInUser = userService.findByUserName("john@employee.com");
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        SimpleKeycloakAccount detail = (SimpleKeycloakAccount) authentication.getDetails();
+        String username = detail.getKeycloakSecurityContext().getToken().getPreferredUsername();
+        UserDTO loggedInUser = userService.findByUserName(username);
         // get task of the employee
         List<Task> tasks = taskRepository.findAllByTaskStatusAndAssignedEmployee(status,userMapper.convertToEntity(loggedInUser));
         return tasks.stream().map(taskMapper::convertToDTO).toList();
