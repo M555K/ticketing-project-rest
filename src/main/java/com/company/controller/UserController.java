@@ -41,7 +41,7 @@ public class UserController {
     public ResponseEntity<ResponseWrapper> createUser(@RequestBody UserDTO user){
         userService.save(user);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseWrapper("Users are successfully created",user, HttpStatus.CREATED));
+                .body(new ResponseWrapper("User are successfully created", HttpStatus.CREATED));
     }
     @RolesAllowed("Admin")
     @PutMapping
@@ -54,6 +54,6 @@ public class UserController {
     public ResponseEntity<ResponseWrapper> deleteUser(@PathVariable("username") String userName){
         userService.delete(userName);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(new ResponseWrapper("Users are successfully deleted", HttpStatus.NO_CONTENT));
+                .body(new ResponseWrapper("User are successfully deleted", HttpStatus.NO_CONTENT));
     }
 }
