@@ -1,10 +1,12 @@
 package com.company.service.impl;
 
+import com.company.annotation.DefaultExceptionMessage;
 import com.company.dto.ProjectDTO;
 import com.company.dto.RoleDTO;
 import com.company.dto.TaskDTO;
 import com.company.dto.UserDTO;
 import com.company.entity.User;
+import com.company.exception.TicketingProjectException;
 import com.company.mapper.UserMapper;
 import com.company.repository.UserRepository;
 import com.company.service.KeycloakService;
@@ -83,7 +85,8 @@ public class UserServiceImpl implements UserService {
 
     // will not delete from DB
     @Override
-    public void delete(String username) {
+    @DefaultExceptionMessage(defaultMessage = "Failed to delete a user")
+    public void delete(String username) throws TicketingProjectException {
         // find in DB and find the user
         User user =  userRepository.findByUserNameAndIsDeleted(username,false);
         if(checkIfUserCanBeDeleted(user)){
@@ -93,6 +96,8 @@ public class UserServiceImpl implements UserService {
             user.setUserName(user.getUserName()+"-"+user.getId());
             // save the objest
             userRepository.save(user);
+        }else {
+                throw new TicketingProjectException("User can't be deleted");
         }
 
     }
