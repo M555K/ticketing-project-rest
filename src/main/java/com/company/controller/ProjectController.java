@@ -5,6 +5,7 @@ import com.company.dto.ResponseWrapper;
 import com.company.dto.UserDTO;
 import com.company.service.ProjectService;
 import com.company.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 import java.util.List;
 @RestController
 @RequestMapping("/api/v1/project")
+@Tag(name="Project Controller")
 public class ProjectController {
 
     private final UserService userService;

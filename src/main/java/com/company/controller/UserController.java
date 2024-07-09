@@ -1,5 +1,6 @@
 package com.company.controller;
 
+import com.company.annotation.ExecutionTime;
 import com.company.dto.ResponseWrapper;
 import com.company.dto.UserDTO;
 import com.company.exception.TicketingProjectException;
@@ -24,6 +25,7 @@ public class UserController {
     @RolesAllowed({"Manager","Admin"})
     @GetMapping
     @Operation(summary = "Get users")
+    @ExecutionTime
     public ResponseEntity<ResponseWrapper> getUsers(){
         List<UserDTO> userDTOList = userService.listAllUsers();
         return ResponseEntity.ok(new ResponseWrapper("Users are successfully retrieved",userDTOList, HttpStatus.OK));
@@ -45,7 +47,7 @@ public class UserController {
     }
     @RolesAllowed("Admin")
     @PutMapping
-    @Operation(summary = "Updare user")
+    @Operation(summary = "Update user")
     public ResponseEntity<ResponseWrapper> updateUser(@RequestBody UserDTO user){
         userService.update(user);
         return ResponseEntity.ok(new ResponseWrapper("User are successfully updated",user, HttpStatus.OK));
