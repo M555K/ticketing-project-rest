@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-@Slf4j //instead of line 12
+@Slf4j //instead of line 22
 public class LoggingAspect {
     private String getUsername() {
         // get info who is login from keycloak
