@@ -59,14 +59,14 @@ public class ProjectController {
     public ResponseEntity<ResponseWrapper> deleteProject(@PathVariable String code){
         projectService.delete(code);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(new ResponseWrapper("Project is successfully updated", HttpStatus.NO_CONTENT));
+                .body(new ResponseWrapper("Project is successfully deleted", HttpStatus.NO_CONTENT));
     }
     @RolesAllowed("Manager")
     @GetMapping("/manager/project-status")
     public ResponseEntity<ResponseWrapper> getProjectByManager(){
         List<ProjectDTO> allProject=  projectService.listAllProjectDetails();
         return ResponseEntity.ok()
-                .body(new ResponseWrapper("Projects is successfully retrieved", allProject,HttpStatus.OK));
+                .body(new ResponseWrapper("Projects are successfully retrieved", allProject,HttpStatus.OK));
     }
     @RolesAllowed("Manager")
     @PutMapping("/manager/complete/{projectCode}")
