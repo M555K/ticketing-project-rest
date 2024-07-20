@@ -94,6 +94,8 @@ public class UserServiceImpl implements UserService {
             user.setIsDeleted(true);
             // if the admin will create the user and use the same email(username)
             user.setUserName(user.getUserName()+"-"+user.getId());
+            //delete from keycloak
+            keycloakService.delete(username);
             // save the objest
             userRepository.save(user);
         }else {
