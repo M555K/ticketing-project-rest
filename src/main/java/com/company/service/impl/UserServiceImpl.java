@@ -15,9 +15,13 @@ import com.company.service.TaskService;
 import com.company.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -25,33 +29,41 @@ public class UserServiceImpl implements UserService {
     private final ProjectService projectService;
     private final TaskService taskService;
     private final KeycloakService keycloakService;
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, @Lazy ProjectService projectService, @Lazy TaskService taskService, KeycloakService keycloakService) {
+    private final PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, @Lazy ProjectService projectService, @Lazy TaskService taskService, KeycloakService keycloakService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.projectService = projectService;
         this.taskService = taskService;
         this.keycloakService = keycloakService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public List<UserDTO> listAllUsers() {
         //give all users which is deleted fields is false in DB
         List<User> usersList =userRepository.findAllByIsDeletedOrderByFirstNameDesc(false);
-        return usersList.stream().map(userMapper::convertToDTO).toList();
+      // return usersList.stream().map(userMapper::convertToDTO).toList();
+        return usersList.stream().map(userMapper::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public UserDTO findByUserName(String username) {
-       return userMapper.convertToDTO(userRepository.findByUserNameAndIsDeleted(username,false));
+     //  return userMapper.convertToDTO(userRepository.findByUserNameAndIsDeleted(username,false));
+       User user = userRepository.findByUserNameAndIsDeleted(username,false);
+       if(user == null) throw new NoSuchElementException("User Not Found.");
+       return userMapper.convertToDTO(user);
     }
 
     @Override
-    public void save(UserDTO user) {
+    public UserDTO save(UserDTO user) {
         user.setEnabled(true);
+        user.setPassWord(passwordEncoder.encode(user.getPassWord()));
         User userEntity = userMapper.convertToEntity(user);
 
-        userRepository.save(userEntity);
+        User sevedUser = userRepository.save(userEntity);
         keycloakService.userCreate(user);
+        return userMapper.convertToDTO(sevedUser);
     }
 
     @Override
@@ -62,16 +74,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO update(UserDTO user) {
+    public UserDTO update(UserDTO userDTO) {
+        userDTO.setPassWord(passwordEncoder.encode(userDTO.getPassWord()));
         //find user
-        User findUser = userRepository.findByUserNameAndIsDeleted(user.getUserName(),false);
+        User findUser = userRepository.findByUserNameAndIsDeleted(userDTO.getUserName(),false);
         // convert to the entity
-        User convertedUser = userMapper.convertToEntity(user);
+
+        User convertedUser = userMapper.convertToEntity(userDTO);
         //set id to the entity
         convertedUser.setId(findUser.getId());
         //save to the DB
-        userRepository.save(convertedUser);
-        return findByUserName(user.getUserName());
+        User updatedUser = userRepository.save(convertedUser);
+        return userMapper.convertToDTO(updatedUser);
     }
 
     @Override
