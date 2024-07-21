@@ -3,7 +3,9 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.company.dto.ProjectDTO;
 import com.company.dto.RoleDTO;
+import com.company.dto.TaskDTO;
 import com.company.dto.UserDTO;
 import com.company.entity.Role;
 import com.company.entity.User;
@@ -19,12 +21,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -171,6 +176,54 @@ public class UserServiceImplTest {
         assertNotEquals("user3",manager.getUserName());
 
     }
+
+    @Test
+    void should_delete_employee_if_all_task_is_completed() throws TicketingProjectException {
+        //given
+        User employee = getUserWithRole("Employee");
+        when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(employee);
+        when(userRepository.save(any())).thenReturn(employee);
+        when(taskService.listAllNonCompletedByAssignedEmployee(any())).thenReturn(new ArrayList<>());
+        //action
+        userService.delete(employee.getUserName());
+
+        //then
+        assertTrue(employee.getIsDeleted());
+        assertNotEquals("user3",employee.getUserName());
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Employee","Manager"})
+    public void should_delete_user(String role) throws TicketingProjectException {
+        User testUser = getUserWithRole(role);
+        when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(testUser);
+        when(userRepository.save(any())).thenReturn(testUser);
+        lenient().when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(testUser);
+        lenient().when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(testUser);
+        userService.delete(testUser.getUserName());
+    }
+
+    @Test
+    void should_throw_exception_when_deleting_manager_with_project(){
+        User manager = getUserWithRole("Manager");
+        when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(manager);
+        when(projectService.listAllNonCompletedByAssignedManager(any())).thenReturn(new ArrayList<>(List.of(new ProjectDTO())));
+
+        Throwable actualException = assertThrows(TicketingProjectException.class, () -> userService.delete(manager.getUserName()));
+
+        assertEquals("User can't be deleted", actualException.getMessage());
+
+    }
+    @Test
+    void should_throw_exception_when_deleting_employee_with_tasks(){
+        User employee = getUserWithRole("Employee");
+        when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(employee);
+        when(taskService.listAllNonCompletedByAssignedEmployee(any())).thenReturn(new ArrayList<>(List.of(new TaskDTO())));
+        Throwable actualExceptionExactly = assertThrows(TicketingProjectException.class, () -> userService.delete(employee.getUserName()));
+        assertEquals("User can't be deleted",actualExceptionExactly.getMessage());
+    }
+
     private User getUserWithRole(String role) {
         User user3 = new User();
         user3.setFirstName("Adam");
