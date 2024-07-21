@@ -125,6 +125,35 @@ public class UserServiceImplTest {
     // TestNG
     // Test Engine
 
+    @Test
+    public void should_encode_user_password_on_save_operation() {
+        //given
+        when(userMapper.convertToEntity(any(UserDTO.class))).thenReturn(user);
+        when(userRepository.save(any())).thenReturn(user);
+        when(userMapper.convertToDTO(any(User.class))).thenReturn(userDTO);
+        when(passwordEncoder.encode(anyString())).thenReturn("password");
+        String expectedPassword="password";
+        //when
+        UserDTO savedUser =  userService.save(userDTO);
+        //then
+        assertEquals(expectedPassword,savedUser.getPassWord());
+        verify(passwordEncoder).encode(anyString());
+    }
+    @Test
+    public void should_encode_user_password_on_update_operation() {
+        //given
+        when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(user);
+        when(userMapper.convertToEntity(any(UserDTO.class))).thenReturn(user);
+        when(userRepository.save(any())).thenReturn(user);
+        when(userMapper.convertToDTO(any(User.class))).thenReturn(userDTO);
+        when(passwordEncoder.encode(anyString())).thenReturn("password");
+        String expectedPassword="password";
+        //when
+        UserDTO updateUser =  userService.update(userDTO);
+        //then
+        assertEquals(expectedPassword,updateUser.getPassWord());
+        verify(passwordEncoder).encode(anyString());
+    }
 
 
 }
