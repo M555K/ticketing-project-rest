@@ -110,6 +110,21 @@ public class UserServiceImplTest {
         //  verify(userRepository,never()).findAllByIsDeletedOrderByFirstNameDesc(true);
     }
 
+    @Test
+    public void should_trow_no_such_element_exception_when_user_not_found(){
+        when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(null);
+        Throwable actualException = assertThrows(NoSuchElementException.class, () -> userService.findByUserName("username"));
+        //   Throwable actualExceptionExactly = assertThrowsExactly(NoSuchElementException.class, () -> userService.findByUserName("username"));//fail--> not exactly the same exception
+        assertEquals("User Not Found.",actualException.getMessage());
+    }
+    @AfterEach
+    public void tearDown() throws Exception {
+        // Some impl
+    }
+
+    // TestNG
+    // Test Engine
+
 
 
 }
