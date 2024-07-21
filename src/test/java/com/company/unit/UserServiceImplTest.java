@@ -7,6 +7,7 @@ import com.company.dto.RoleDTO;
 import com.company.dto.UserDTO;
 import com.company.entity.Role;
 import com.company.entity.User;
+import com.company.exception.TicketingProjectException;
 import com.company.mapper.UserMapper;
 import com.company.repository.UserRepository;
 import com.company.service.KeycloakService;
@@ -23,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -154,6 +156,30 @@ public class UserServiceImplTest {
         assertEquals(expectedPassword,updateUser.getPassWord());
         verify(passwordEncoder).encode(anyString());
     }
+    @Test
+    void should_delete_manager_if_all_projects_is_completed() throws TicketingProjectException {
+        //given
+        User manager = getUserWithRole("Manager");
+        when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(manager);
+        when(userRepository.save(any())).thenReturn(manager);
+        when(projectService.listAllNonCompletedByAssignedManager(any())).thenReturn(new ArrayList<>());
+        //action
+        userService.delete(manager.getUserName());
 
+        //then
+        assertTrue(manager.getIsDeleted());
+        assertNotEquals("user3",manager.getUserName());
 
+    }
+    private User getUserWithRole(String role) {
+        User user3 = new User();
+        user3.setFirstName("Adam");
+        user3.setLastName("Ronan");
+        user3.setUserName("user33");
+        user3.setPassWord("abc2");
+        user3.setEnabled(true);
+        user3.setIsDeleted(false);
+        user3.setRole(new Role(role));
+        return user3;
+    }
 }
