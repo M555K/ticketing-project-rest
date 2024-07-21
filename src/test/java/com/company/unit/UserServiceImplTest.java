@@ -67,6 +67,49 @@ public class UserServiceImplTest {
         roleDTO.setDescription("Employee");
         userDTO.setRole(roleDTO);
     }
+    private List<User> getUsers () {
+        User user2 = new User();
+        user2.setId(2L);
+        user2.setFirstName("Elizabeth");
+        return List.of(user,user2);
+    }
+    private List<UserDTO> getUsersDTO () {
+        UserDTO userDTO2 = new UserDTO();
+        userDTO2.setId(2L);
+        userDTO2.setFirstName("Elizabeth");
+        return List.of(userDTO,userDTO2);
+    }
+    @Test
+    public void should_list_all_users(){
+
+        // given - Preparation
+        List<User> users = getUsers();
+        List<UserDTO> userDTOs = getUsersDTO();
+
+        when(userRepository.findAllByIsDeletedOrderByFirstNameDesc(false)).thenReturn(users);
+        when(userMapper.convertToDTO(eq(users.get(0)))).thenReturn(userDTOs.get(0));
+        when(userMapper.convertToDTO(eq(users.get(1)))).thenReturn(userDTOs.get(1));
+
+        List<UserDTO> expectedList = userDTOs;
+        System.out.println(expectedList);
+
+        // when - Action
+        List<UserDTO> actualList = userService.listAllUsers();
+        System.out.println(actualList);
+
+        // then - Assertion/Verification
+        // AssertJ
+        assertThat(actualList).usingRecursiveComparison().isEqualTo(expectedList);
+
+        verify(userRepository, times(1)).findAllByIsDeletedOrderByFirstNameDesc(false);
+        verify(userRepository, never()).findAllByIsDeletedOrderByFirstNameDesc(true);
+        //  verify(userRepository).findAllByIsDeletedOrderByFirstNameDesc(true);//fail --> because is not invoke
+        //   verify(userRepository,atLeastOnce()).findAllByIsDeletedOrderByFirstNameDesc(false);
+        //  verify(userRepository,atMost(1)).findAllByIsDeletedOrderByFirstNameDesc(false);
+        //verify(userRepository,never()).findAllByIsDeletedOrderByFirstNameDesc(false);// fail--> I called this method
+        //  verify(userRepository,never()).findAllByIsDeletedOrderByFirstNameDesc(true);
+    }
+
 
 
 }
