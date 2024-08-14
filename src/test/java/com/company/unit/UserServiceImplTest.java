@@ -221,7 +221,7 @@ public class UserServiceImplTest {
         when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(employee);
         when(taskService.listAllNonCompletedByAssignedEmployee(any())).thenReturn(new ArrayList<>(List.of(new TaskDTO())));
         Throwable actualExceptionExactly = assertThrows(TicketingProjectException.class, () -> userService.delete(employee.getUserName()));
-        assertEquals("User can't be deleted",actualExceptionExactly.getMessage());
+        assertEquals("User can't be deleted",actualExceptionExactly.getMessage() );
     }
 
     private User getUserWithRole(String role) {
